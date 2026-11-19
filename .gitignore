@@ -4,3 +4,9 @@ __pycache__/
 .mplconfig/
 *.pyc
 *.zip
+data/cache/
+.streamlit/secrets.toml
+# Full event CSVs exceed GitHub's file limit. All rows are versioned losslessly
+# in gradient_event_parts/*.csv.gz; the archive tool restores the exact CSV.
+results/real_workers/gradient_events.csv
+results/real_workers/quick/gradient_events.csv
