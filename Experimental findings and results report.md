@@ -1,4 +1,4 @@
-# A simple guide to explaining the experiment to the professor
+# Experimental findings and results report
 
 **Project:** Delay-Robust Distributed Optimization — CSCI 8000, Optimization in AI.
 
