@@ -1,3 +1,276 @@
+# Delay-Robust Distributed Optimization
+
+CSCI 8000 — Optimization in AI, master's research project.
+
+This project studies how slow workers and outdated gradients affect SGD. It now
+contains both the original Week 9 event-driven simulation and a separate, measured
+Python multiprocessing implementation. A parameter server owns the model and
+independent worker processes compute gradients from immutable model snapshots.
+
+**Scope:** the real-worker implementation runs on one physical machine. It measures
+local CPU contention, process scheduling, shared-memory access, and queue overhead.
+It does not claim to be a networked multi-machine distributed system.
+
+Repository: [sathvikred1/Delay-Robust-Distributed-Optimization](https://github.com/sathvikred1/Delay-Robust-Distributed-Optimization).
+Development branch: `real-worker-experiments`. The original simulation artifacts
+remain in `results/`, `plots/`, and `quick/`; new artifacts live below `real_workers/`.
+The complete original Week 9 README is retained at the end of this document.
+
+## Research questions
+
+- How does waiting for the slowest worker affect progress under a real time budget?
+- How do additional processes affect throughput, convergence, and gradient age?
+- When does discarding stale work help, and how much computation does it waste?
+- How does fixed asynchronous mini-batching change the effective batch size?
+- Which conclusions from simulated timing remain useful with real process overhead?
+
+## Installation
+
+Use Python 3.10 or newer in an isolated environment. The recorded run uses the
+Python and package versions in `results/real_workers/hardware_info.json`.
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pytest -q
+```
+
+`requirements-real-workers-lock.txt` records the exact installed packages for the
+new experiment. `requirements-lock.txt` is retained for the historical simulation.
+For strict package replay, install the new lock file in a compatible Python environment.
+A first CoverType run downloads the real data; Breast Cancer is bundled with scikit-learn.
+No synthetic fallback is used if downloading fails. Dataset caches are not committed.
+
+## Algorithms and work accounting
+
+All methods start at the zero vector, use binary logistic loss, an unregularized
+intercept, L2 regularization 0.001, and a common learning rate 0.05.
+Worker batches are sampled with replacement using independent streams seeded by
+experiment seed and worker ID. The same worker's task sequence is paired across
+methods; asynchronous arrival order is determined by the operating system.
+
+| Method | Server behavior | Examples per applied update |
+| --- | --- | --- |
+| Synchronous SGD | Wait for every worker, then average the round | workers × batch size |
+| Vanilla async SGD | Apply the returned snapshot gradient immediately | batch size |
+| Delay-filtered async | Apply only when staleness ≤ 2, 5, or 10 | batch size |
+| Simplified async mini-batch | Average four accepted gradients, threshold 5 | 4 × batch size |
+
+Staleness = current applied-update count − snapshot's update count. Rejections do
+not increment the model version. The server never recomputes a returned gradient.
+Worker results carry snapshot fingerprints so the version-to-model mapping can be audited.
+The mini-batch implementation uses fixed groups; it does not reproduce the full
+adaptive algorithm or theoretical parameter choices in the research papers.
+
+At stopping, outstanding tasks are drained without updating the model. They are
+recorded as `after_budget`. Incomplete accepted groups remain `gradients_pending`;
+they are not flushed at zero cost. The invariants are:
+
+```text
+computed = accepted + discarded
+accepted = used + pending
+started = computed after draining
+examples processed = computed × worker batch size
+updates × effective batch size = used gradients × worker batch size
+```
+
+History logs counts of gradient results received before each model evaluation.
+Raw final counts also include the drained work. Throughput and staleness summaries
+use only in-budget arrivals. A discarded gradient still consumed computation.
+
+## Real datasets and leakage prevention
+
+| Dataset | Use | Original shape | Binary target |
+| --- | --- | --- | --- |
+| Breast Cancer Wisconsin Diagnostic | Quick demonstration and data tests | 569 rows, 30 features | benign = 1; malignant = 0 |
+| Forest CoverType | Full main grid | 581,012 rows, 54 features | type 2, Lodgepole Pine = 1; all others = 0 |
+
+Sources: [Breast Cancer loader](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.load_breast_cancer.html)
+and [CoverType loader](https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_covtype.html).
+CoverType originally has seven classes; this experiment explicitly uses one-versus-rest
+binary logistic regression, not seven-class classification.
+
+Both datasets use a fixed stratified 70%/15%/15% train/validation/test split with seeds
+2027 and 2028. A `StandardScaler` is fitted on training rows only and then applied to
+validation and test rows. A constant intercept column is appended after scaling.
+Data and split fingerprints, scaler parameters, class balance, and exact row counts
+are saved in `experiment_config.json`. Test scores are computed only after training;
+they are not used to fit preprocessing, choose hyperparameters, or stop training.
+
+## Reproduce experiments
+
+```bash
+python run_real_workers.py --quick
+python run_real_workers.py --full
+python generate_real_worker_plots.py
+streamlit run dashboard/app.py
+```
+
+| Mode | Data | Workers | Seeds | Time/run | Worker batch | Runs |
+| --- | --- | --- | --- | --- | --- | --- |
+| Quick | Breast Cancer | 1, 4 | 11 | 0.8 seconds | 128 | 36 |
+| Full | Complete CoverType | 1, 2, 4, 8 | 11, 22, 33 | 3 seconds | 1,024 | 216 |
+
+Both modes include natural execution, moderate delays, severe delays, and all six
+algorithm variants. In moderate/severe scenarios the last `max(1, floor(workers/4))`
+workers actually sleep for 5/25 ms after computing each snapshot gradient. For one
+worker that worker is slow; for two workers one is slow. Natural execution adds no
+sleep. The slow-worker fraction therefore varies with worker count at small counts.
+Native BLAS threads are capped at one per process to avoid nested oversubscription.
+Runs execute in a fixed shuffled order (seed 2028); configurations do not execute
+concurrently. Runtime depends on hardware, scheduling, evaluation, and startup costs.
+
+Quick results go to `results/real_workers/quick/`; full results go to
+`results/real_workers/`. Existing result directories are protected against overwriting. Repeating the default
+quick/full commands automatically creates a timestamped directory under
+`results/real_workers/runs/`; the dashboard lists these new runs as well.
+An explicit `--output` must name a fresh directory. For example:
+
+```bash
+python run_real_workers.py --quick --output results/real_workers/demo_run
+python run_real_workers.py --full --time-budget 10 --output results/real_workers/longer_run
+python run_real_workers.py --full --max-samples 50000 --output results/real_workers/subset_run
+python generate_real_worker_plots.py --results results/real_workers/quick --output plots/real_workers/quick
+```
+
+Longer budgets and stratified subsets are explicit overrides recorded in the manifest;
+results must not be labeled as the default full experiment when those settings differ.
+The dashboard offers the committed default suites and timestamped reruns. For any
+other output directory, use its CSVs and the plotting command's `--results` argument.
+
+## Measured artifacts
+
+| File | Contents |
+| --- | --- |
+| `raw_results.csv` | One row per run, losses, accuracy, counts, times, effective batches, held-out scores |
+| `aggregate_results.csv` | Mean and sample SD across seeds at fixed configuration |
+| `gradient_events.csv` | Every returned worker task, model versions, snapshot fingerprint, timing, acceptance |
+| `training_history.csv` | Model evaluations and work counts over actual training time |
+| `worker_timing.csv` | Per-process PID, compute/sleep/latency totals, throughput, clean exit |
+| `experiment_config.json` | Exact grid, data fingerprints, seeds, source hashes, completion status |
+| `hardware_info.json` | OS, CPU, memory, Python, packages, BLAS and process settings |
+| `experiment_summary.md` | Automatically derived observations and limitations |
+| `final_models.npz` | Final parameter vector for every run |
+| `artifact_verification.json` | Independent cross-file accounting and checksum audit |
+| `model_verification.json` | Rebuilt dataset fingerprint and recomputed scores for every final model |
+
+Full event CSVs can exceed GitHub's individual-file limit. **Every measured event is
+retained:** the local CSV is saved as requested and exact compressed CSV parts are
+versioned under `gradient_event_parts/`. These contain no sampled or fabricated rows.
+The index records row counts and SHA256 checksums. Plots read either the local CSV or
+the versioned parts. Restore the byte-identical CSV after cloning with:
+
+```bash
+python scripts/real_worker_artifacts.py --results results/real_workers --restore-events
+python scripts/real_worker_artifacts.py --results results/real_workers/quick --restore-events
+```
+
+Archive and independently verify a new run with:
+
+```bash
+python scripts/real_worker_artifacts.py --results results/real_workers --archive --verify
+python scripts/verify_real_worker_models.py --results results/real_workers
+```
+
+## Results and figures
+
+<!-- REAL_WORKER_FINDINGS_START -->
+On the recorded Apple M2, vanilla async's natural-execution throughput was 4,046, 7,244, 10,386, 10,322 gradients/s for 1, 2, 4, and 8 workers. Throughput flattened between 4 and 8 workers.
+
+With 8 workers and severe delays, mean final training loss was 0.57183 for synchronous SGD and 0.51596 for vanilla async. Effective batches and total work differ, so these are not batch-matched optimizer rankings.
+
+Vanilla async's mean maximum staleness increased from 24.3 updates under natural execution to 391.3 under severe delay, while mean staleness stayed near seven. These are descriptive three-seed results from short local runs.
+<!-- REAL_WORKER_FINDINGS_END -->
+
+Read the measured [full summary](results/real_workers/experiment_summary.md),
+[quick summary](results/real_workers/quick/experiment_summary.md), and
+[research report](reports/real_worker_experiment_report.md). They distinguish the
+real experiments from the original [Week 9 simulation report](results/week9_summary.md).
+No earlier report is rewritten to imply that real-worker experiments had already happened.
+
+`plots/real_workers/` contains readable PNG and vector PDF versions of:
+
+1. Training loss versus measured seconds.
+2. Validation accuracy versus measured seconds.
+3. Worker count versus gradient throughput, separated by delay scenario.
+4. Mean and maximum gradient staleness.
+5. Filtering threshold versus final loss and stale-work rejection.
+6. Slow-worker effects on loss and throughput.
+7. Historical simulation and real-worker curves in separately labeled panels.
+8. Loss versus computed gradients received by the server.
+9. Loss versus training examples processed, including repetitions.
+10. A measured per-worker execution and server-receipt timeline.
+11. Loss versus applied optimizer updates.
+
+Source snapshots preserve the exact experiment files matching each run's hashes,
+even if CLI or reporting tools are later improved. The audit reports current-code
+differences separately from the verified run-source snapshot.
+
+Seed curves are linearly interpolated only over their shared progress range. Bands
+are sample standard deviations, not confidence intervals. Quick mode has one seed,
+so its sample SD is undefined and no uncertainty band is drawn. The simulation panel
+uses synthetic data and simulated time units: it is a qualitative comparison, not a
+calibration or speedup measurement against the real-data experiments.
+
+![Measured worker scaling](plots/real_workers/03_worker_scaling.png)
+
+## Dashboard and demonstration
+
+`streamlit run dashboard/app.py` opens the interactive results explorer. It reads CSVs
+directly and derives all displayed observations. Filter by dataset suite, algorithm,
+worker count, delay scenario, and seed, then compare time, updates, gradients, and
+examples. It also shows staleness, throughput, effective batch sizes, hardware details,
+and downloadable result rows.
+
+Review [verification evidence](reports/verification_summary.md) and the
+[changed-file manifest](reports/changed_files.md) before pushing.
+Use [the professor demo](reports/professor_demo.md) for a 5–7 minute walkthrough,
+and [the semester progress plan](reports/semester_progress.md) to connect this work
+to Weeks 10–15.
+
+## Interpretation and limitations
+
+More updates do not establish better optimization. Methods have different effective
+batches and may do different amounts of work within the same clock budget. This is
+a systems-and-optimization study, not a batch-matched ranking of optimizers.
+
+Initial evaluation and process startup are outside the training budget and reported
+separately; periodic full training/validation evaluation is inside it while workers
+continue. Final evaluation, draining, and shutdown are outside it. End-to-end time
+includes all these phases. Held-out test scoring, dataset loading, and CSV writing are suite costs, not
+per-run training costs. A running evaluation can slightly overrun the nominal deadline;
+actual elapsed time is recorded and no later arrival updates the model.
+
+Gradient compute time excludes injected sleep. Dispatch, dispatch-to-start latency,
+result delivery latency, server coordination, and queue wait are separate measurements.
+They overlap with work in other processes and cannot be summed as a pure communication
+cost. Queue waiting also includes computation. No network latency was measured.
+
+Short logistic-regression kernels can be dominated by IPC and server evaluation.
+Local scheduling, background machine activity, and CPU contention make arrival order,
+wall time, and final asynchronous parameters nondeterministic even with fixed RNG seeds.
+Three seeds support descriptive mean/SD comparisons, not statistical-significance claims.
+Random row splits of spatial forest observations may overstate geographic generalization.
+Fixed learning rates, unequal batches, a binary target, one machine, and fixed injected
+sleeps limit generality. Longer runs, more seeds, matched batches, spatial holdouts,
+and a networked multi-machine implementation are future work.
+
+## Research papers
+
+- Amit Attia, Ofir Gaash, Tomer Koren. [Faster Stochastic Optimization with Arbitrary
+  Delays via Adaptive Asynchronous Mini-Batching](https://proceedings.mlr.press/v267/attia25a.html), ICML 2025.
+- Artavazd Maranjyan, Alexander Tyurin, Peter Richtárik. [Ringmaster ASGD: The First
+  Asynchronous SGD with Optimal Time Complexity](https://proceedings.mlr.press/v267/maranjyan25b.html), ICML 2025.
+
+These papers motivate stale-gradient rejection and asynchronous batching. The project
+implements simplified educational policies, not the papers' full theoretical algorithms.
+
+---
+
+<details>
+<summary>Original Week 9 simulation README (preserved historical results)</summary>
+
 # Asynchrony / Delay-Robust Optimization
 
 This project studies how worker delays and stale gradients affect distributed stochastic optimization. We use an event-driven simulation to compare synchronous SGD with several asynchronous optimization approaches under different levels of worker delay.
@@ -469,3 +742,5 @@ International Conference on Machine Learning (ICML), 2025.
 **Artavazd Maranjyan, Alexander Tyurin, and Peter Richtárik.**  
 *Ringmaster ASGD: The First Asynchronous SGD with Optimal Time Complexity.*  
 International Conference on Machine Learning (ICML), 2025.
+
+</details>
