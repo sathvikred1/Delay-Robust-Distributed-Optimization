@@ -4,13 +4,13 @@ Open a terminal in Delay-Robust-Distributed-Optimization, activate `.venv`, and 
 the dashboard and measured figures ready. Use the saved full results for the talk;
 a complete experiment grid is not a live-demo requirement.
 
-##State the question and scope
+## State the question and scope
 
 “My project studies how worker delays and stale gradients affect SGD. Week 9 used
 an event-driven simulation. I extended it with separate Python worker processes and
 real datasets. This is a single-machine parameter server, not a multi-machine cluster.”
 
-Show `results/week9_summary.md` beside `reports/real_worker_experiment_report.md`.
+Show `archive/week9/week9_summary.md` beside `reports/real_worker_experiment_report.md`.
 The former remains a simulation report. Explain that real processes expose queue,
 scheduling, evaluation, and CPU-contention costs missing from simulated time.
 ## The implementation

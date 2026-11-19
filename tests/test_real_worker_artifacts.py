@@ -65,3 +65,21 @@ def test_default_cli_rerun_preserves_prior_results(tmp_path, monkeypatch):
     assert original.read_text() == '{"complete": true}'
     assert calls[0][1].parent == Path("results/real_workers/runs")
     assert calls[0][1].name.startswith("quick_")
+
+
+
+def test_simulation_comparison_reads_archived_results(tmp_path):
+    import io
+    import tarfile
+    from real_workers.plotting import load_simulation_history
+
+    assert load_simulation_history(tmp_path) is None
+    expected = pd.DataFrame({"run_id": ["simulation"], "simulated_time": [1.5], "training_loss": [0.4]})
+    content = expected.to_csv(index=False).encode()
+    archive = tmp_path / "archive/week9/simulation_artifacts.tar.gz"
+    archive.parent.mkdir(parents=True)
+    with tarfile.open(archive, "w:gz") as bundle:
+        member = tarfile.TarInfo("results/raw_results.csv")
+        member.size = len(content)
+        bundle.addfile(member, io.BytesIO(content))
+    pd.testing.assert_frame_equal(load_simulation_history(tmp_path), expected)

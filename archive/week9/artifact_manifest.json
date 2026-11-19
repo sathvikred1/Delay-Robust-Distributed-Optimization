@@ -1,0 +1,293 @@
+{
+  "original_commit": "90ff3c2ca52c25a07617db6dd3144bb531016879",
+  "files": {
+    "plots/01_loss_vs_updates.pdf": {
+      "sha256": "6fe61aaf5ec8208e53dc4ebf93115f4652e3cf76709a587b80db270006e82d39",
+      "bytes": 117998
+    },
+    "plots/01_loss_vs_updates.png": {
+      "sha256": "2583ed40348724ccb2336e33ba366eca63ae8d045ce91b1851956d7fd59ec9d3",
+      "bytes": 186676
+    },
+    "plots/02_loss_vs_time.pdf": {
+      "sha256": "284815010dd9217548749508d75cd79e26562ccddc8609d661c4d000dea8d8d2",
+      "bytes": 113764
+    },
+    "plots/02_loss_vs_time.png": {
+      "sha256": "8c0b78b5bccd504c11d3813aa36d63f22b97fe6ddcdc60ad8224f801ba4c1a61",
+      "bytes": 234111
+    },
+    "plots/03_staleness_vs_time.pdf": {
+      "sha256": "414ae46422ac42c1e6fc115723dafcc6244b30c910febfe1822f4f98b2f24136",
+      "bytes": 104320
+    },
+    "plots/03_staleness_vs_time.png": {
+      "sha256": "6cb6cc67dd4c1378892af2b8670ccbb883e65913eccfe9e240e5e67ae5296e8e",
+      "bytes": 235043
+    },
+    "plots/04_staleness_by_method.pdf": {
+      "sha256": "c014112b0a88a81f369764ccb9b12aef1497c1bc657109dc5014e1e895ec653a",
+      "bytes": 20960
+    },
+    "plots/04_staleness_by_method.png": {
+      "sha256": "766197b393927bc0f0ffbf381930889e0d1eaf297198a0cdbb8fd6b6aab6728f",
+      "bytes": 157928
+    },
+    "plots/05_discard_percentage.pdf": {
+      "sha256": "a81100c2377cbd568d5abe3434ac143834e890325c513c43aefd2223dfe31060",
+      "bytes": 20312
+    },
+    "plots/05_discard_percentage.png": {
+      "sha256": "ab19414b449e173dcea720d721f5a5cc9bd9a8e0e20cc23bc3df2f395b12ccb3",
+      "bytes": 159016
+    },
+    "plots/06_worker_scaling.pdf": {
+      "sha256": "eed5b010721a4cbd017c60ea51bd1f9615c9407d648e63c18aa169a0b6f0e7cc",
+      "bytes": 108617
+    },
+    "plots/06_worker_scaling.png": {
+      "sha256": "985ed117d8bdc5b8c14c687002a0cf4cc000b4ecdda9220200d2c14cff667aef",
+      "bytes": 318248
+    },
+    "plots/07_threshold_comparison.pdf": {
+      "sha256": "22715d88ae70de12692db27cc21b7f8b521021a1d9e07d2ebaf541911b67e6f5",
+      "bytes": 119331
+    },
+    "plots/07_threshold_comparison.png": {
+      "sha256": "fa0e0b0bf0e66d1c755fb3d8a0464fc4cf9c539b20c43a86b87bd30b4702d7dc",
+      "bytes": 206011
+    },
+    "plots/08_async_heterogeneity.pdf": {
+      "sha256": "fb2b54c97de238580d660b298e8183fde86d72fd2420cb608b6e8c79fdc6e070",
+      "bytes": 98752
+    },
+    "plots/08_async_heterogeneity.png": {
+      "sha256": "59d45e799cfa5bd2cb5576e0102f243aa513eb175444290e2992b79f569e265b",
+      "bytes": 312941
+    },
+    "plots/09_async_minibatch.pdf": {
+      "sha256": "a4d4b4caf6e5f180855c046ba039eaf60a28fc1435f56cd16765760acf24cc96",
+      "bytes": 70911
+    },
+    "plots/09_async_minibatch.png": {
+      "sha256": "80bd6fd0fd6a43e2b83a4b57673cab9883b4d5cebc6d3740a1f46c0bc6029adc",
+      "bytes": 170536
+    },
+    "plots/10_tail_staleness.pdf": {
+      "sha256": "84182030fc9f0e06b15b690bbd97915fdf1456c3f9012a5fbb43d9996f460546",
+      "bytes": 17975
+    },
+    "plots/10_tail_staleness.png": {
+      "sha256": "a647e4dbdcd8612c75f1178cef535a4d21e9e3701f922febb53b8a593726bcc1",
+      "bytes": 120229
+    },
+    "plots/11_straggler_count.pdf": {
+      "sha256": "56e464112745451ef464ae179144fd583a97b95ca772409ea635f5b4d741aa03",
+      "bytes": 22250
+    },
+    "plots/11_straggler_count.png": {
+      "sha256": "31205a2b2e52e131093215175fefe6a1df0d23b4e262a82041e91c8706111804",
+      "bytes": 216735
+    },
+    "plots/12_loss_vs_gradient_work.pdf": {
+      "sha256": "f775d775f3c9c4d3da747c01384e9d0c68526f1d48e3da1095431ad3a8dd110b",
+      "bytes": 48490
+    },
+    "plots/12_loss_vs_gradient_work.png": {
+      "sha256": "87aded1993dfcfed5521a2422091e38a3d9d4865f73029a7fbf652e9eccf8f41",
+      "bytes": 102307
+    },
+    "quick/plots/01_loss_vs_updates.pdf": {
+      "sha256": "02523d1ba2a83b273dd3748ee912c6fec751e1282ee500b0a13081e897653c64",
+      "bytes": 35118
+    },
+    "quick/plots/01_loss_vs_updates.png": {
+      "sha256": "a1f6f017a0b38c4784c7c47ed79a1b2ce2234b737fda7a1abda2ff4fc7ac0df1",
+      "bytes": 194655
+    },
+    "quick/plots/02_loss_vs_time.pdf": {
+      "sha256": "f01b1cabf122173e79f4aa0ff315c6a86a51f27e46c0a0e1807c345b8b9d7f85",
+      "bytes": 31790
+    },
+    "quick/plots/02_loss_vs_time.png": {
+      "sha256": "1bf1af8b3b564dbe7ff7910139f787a480d91ddfa3259771f95c22fa549344fc",
+      "bytes": 208367
+    },
+    "quick/plots/03_staleness_vs_time.pdf": {
+      "sha256": "36bb08e9c2e628f3775af16ddf3bf57f46c36e9e896d9fd955fd51f2fd436ff1",
+      "bytes": 32466
+    },
+    "quick/plots/03_staleness_vs_time.png": {
+      "sha256": "694778a727dbdc88e03b45359f1003633929f56a95f2169ae70674f982547747",
+      "bytes": 210594
+    },
+    "quick/plots/04_staleness_by_method.pdf": {
+      "sha256": "22545c8570f209e5417037aae8473f5dbe60ee7e8b5042f7e73f672ffdd7ad75",
+      "bytes": 20523
+    },
+    "quick/plots/04_staleness_by_method.png": {
+      "sha256": "83cf2acc82d87cecf81ffe3accc82dc85b97b58cfc5546c74212b07f94ab6f4e",
+      "bytes": 157168
+    },
+    "quick/plots/05_discard_percentage.pdf": {
+      "sha256": "75042080341ed58a64b8a6761e3a6a84412bcc4e98fd6c28f4b0e37328f699ed",
+      "bytes": 19874
+    },
+    "quick/plots/05_discard_percentage.png": {
+      "sha256": "54421ea499025b6d8557e1c27dc9f696c19eedd07bfd953486f63c5879b70683",
+      "bytes": 157453
+    },
+    "quick/plots/06_worker_scaling.pdf": {
+      "sha256": "cca99ddba273c9d4614d26a5b84a43d7a01b76943ea4a5eac060aefaca2776b7",
+      "bytes": 30965
+    },
+    "quick/plots/06_worker_scaling.png": {
+      "sha256": "8043e8f8a9b93ac9725be24b0e8e29d37e78a5935f2cbc91aa7d0aa4ae06e668",
+      "bytes": 287342
+    },
+    "quick/plots/07_threshold_comparison.pdf": {
+      "sha256": "b601d46bd1d1fb9f5624313d196d0fc0c9450461a490113f0cda2508268d59e0",
+      "bytes": 32333
+    },
+    "quick/plots/07_threshold_comparison.png": {
+      "sha256": "d2e60eed711cf92c1196f5254d381a54a5e18a6dc7438c8d261f8ff031302f68",
+      "bytes": 201342
+    },
+    "quick/plots/08_async_heterogeneity.pdf": {
+      "sha256": "b0061b9afbc51c2b4d2f44b167616f6b49c11ae92428b1b0fb0645f4e1090815",
+      "bytes": 35126
+    },
+    "quick/plots/08_async_heterogeneity.png": {
+      "sha256": "7e8bb7c3d3c89418571d14b4af50a08b9381818c9a727d7d9ba8cdb176808835",
+      "bytes": 318575
+    },
+    "quick/plots/09_async_minibatch.pdf": {
+      "sha256": "c1aef1e2a9d4091952b39839d5950a8c7faece4a1a555cada2980f2aefe4309f",
+      "bytes": 27257
+    },
+    "quick/plots/09_async_minibatch.png": {
+      "sha256": "d4e8eea0d41072287601060be4eec4c8e32e0671cb4e536d40c9d78d6b441744",
+      "bytes": 165214
+    },
+    "quick/plots/10_tail_staleness.pdf": {
+      "sha256": "6f2e20bfc44584575fa417309ae2b9a1e494f07ca1250e248f0e13f6fcb0ddfd",
+      "bytes": 17421
+    },
+    "quick/plots/10_tail_staleness.png": {
+      "sha256": "458ae84f8c75c1a59a358c991aa60a317edcbabc8333126cefc271c0973c0973",
+      "bytes": 112553
+    },
+    "quick/plots/11_straggler_count.pdf": {
+      "sha256": "08341131bf3288462ca33fc2ecddfd426eece221c84b85746b2e26380509442c",
+      "bytes": 21741
+    },
+    "quick/plots/11_straggler_count.png": {
+      "sha256": "1176fcfd39dbf68e023e9de3fdafc52e5e36deab2425a71ef34146c7891a9315",
+      "bytes": 198881
+    },
+    "quick/plots/12_loss_vs_gradient_work.pdf": {
+      "sha256": "dd433891067ee0896e038a73a9ad4269ed86eeec015119df196c6a1aeb81cb1a",
+      "bytes": 22871
+    },
+    "quick/plots/12_loss_vs_gradient_work.png": {
+      "sha256": "19b6ca9cf8e2c1c59fdb653b76a400138233d8234e8386cb6bc1ff2f7128eed9",
+      "bytes": 98471
+    },
+    "quick/results/aggregate_results.csv": {
+      "sha256": "f3146822142d3db8642c32ef65ffcefb5d621ba3aafddbce1e9d20211b87c1a3",
+      "bytes": 17220
+    },
+    "quick/results/empirical_checks.csv": {
+      "sha256": "3b6f70e047799f9f16cc21f213d4072708a7d07671506d0e2015c108e41e0d9c",
+      "bytes": 1214
+    },
+    "quick/results/gradient_events.csv.gz": {
+      "sha256": "b820902b2db5f9ac6a32ed6ec989a4adda09ee7a2fbfeea81778d6b1d52fcf72",
+      "bytes": 483211
+    },
+    "quick/results/paired_comparisons.csv": {
+      "sha256": "e7e0614da3dfd6d1fafdb8db065aa9c69159f702e0b452cce476f13a516fb7c0",
+      "bytes": 5826
+    },
+    "quick/results/raw_results.csv": {
+      "sha256": "8093f4c632242188377f6e6d6011657881541bcdc562ab0506d2ce2f6e932d3e",
+      "bytes": 2292330
+    },
+    "quick/results/run_manifest.json": {
+      "sha256": "0673493f76b932ea453f320552379633d9a7ce3d41c1356d277522ebeca609c1",
+      "bytes": 19496
+    },
+    "quick/results/sanity_checks.json": {
+      "sha256": "ac2ca0408b0585e011b20f5fb052db1405682d7e5f41c5626f66fd38e650d869",
+      "bytes": 2481
+    },
+    "quick/results/straggler_diagnostics.csv": {
+      "sha256": "e041916a47b63ac0a95b268a453f434ab958510c232196f42081c5a54f6da0ac",
+      "bytes": 1770
+    },
+    "quick/results/summary_results.csv": {
+      "sha256": "a9329aad20461152de5b2ab8e3775b90c95c3c227b38d2905af5807d181e9330",
+      "bytes": 18026
+    },
+    "quick/results/summary_results.md": {
+      "sha256": "521c9e105cc12ac5a47d4202f74be6b3e86281b2c731d323a53f296e13e2dac9",
+      "bytes": 8538
+    },
+    "quick/results/week9_summary.md": {
+      "sha256": "3279608bb95397670bace481531f92cc1d696da64ade527781160a0a26103c6e",
+      "bytes": 14357
+    },
+    "requirements-dev.txt": {
+      "sha256": "8636f9ab1a075be9f3039e2a6471837259c4f36b625bcaf7a3d9a1edd2419c6d",
+      "bytes": 34
+    },
+    "results/aggregate_results.csv": {
+      "sha256": "f50e1e79fd09c4119f75af80df34779f677e39a56dd51c07c88125abf49a2fbc",
+      "bytes": 38946
+    },
+    "results/artifact_verification.json": {
+      "sha256": "4fadd7e737c46e9c8a73d6836eec8d944e7ce3cfd2de67f7405f2af6469a010d",
+      "bytes": 539
+    },
+    "results/empirical_checks.csv": {
+      "sha256": "f9b6d1e9daf3d5bb51aee6c44aaa79c3162806dc41220b95a36373d4f349d771",
+      "bytes": 1216
+    },
+    "results/gradient_events.csv.gz": {
+      "sha256": "7691cfe3b75b46dccf60d44a6d549114c7b9bf30075fa32982f369da7c52e9cb",
+      "bytes": 6057823
+    },
+    "results/paired_comparisons.csv": {
+      "sha256": "36d990fd26d533b7603fc3d85ea29c023cc199210b0817320981afa5c7071169",
+      "bytes": 17733
+    },
+    "results/raw_results.csv": {
+      "sha256": "638bc43de2edd2b36c341b15ed454b5efcdaec1091059d467cef0ef094d5d72a",
+      "bytes": 26561604
+    },
+    "results/run_manifest.json": {
+      "sha256": "4d6c433cc0b7e7fb302aa88e123cb4d13e4161af5962544c1ad4b895642b8b5e",
+      "bytes": 52667
+    },
+    "results/sanity_checks.json": {
+      "sha256": "49dc85527ccf329a4eda9c3098261fdae7b75d1cf36a79479ad95463857f94dd",
+      "bytes": 2484
+    },
+    "results/straggler_diagnostics.csv": {
+      "sha256": "468f7a34f728182c652538d8a3a14406557120ee1007884ff47f8e774dd103f2",
+      "bytes": 4191
+    },
+    "results/summary_results.csv": {
+      "sha256": "8e0ec7c35df5309e55252665b387e814b15f7f3daafe998a66fd261637df87f4",
+      "bytes": 53745
+    },
+    "results/summary_results.md": {
+      "sha256": "7c45af2e7337f6537f177b1c839cfc8be04d7a216ed2c4b2879a7d2899cb4365",
+      "bytes": 9495
+    },
+    "results/week9_summary.md": {
+      "sha256": "5bb3d5042ab3570028d30b2ea2c304114fd3cb81e6e554e137f2e755c1291343",
+      "bytes": 14426
+    }
+  }
+}

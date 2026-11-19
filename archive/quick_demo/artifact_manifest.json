@@ -1,0 +1,96 @@
+{
+  "files": {
+    "plots/real_workers/quick/01_training_loss_vs_time.pdf": {
+      "sha256": "616e7dc5451a23b70e078c9ae990bc34ff7268b203fea531a145bf44d42baecd",
+      "bytes": 25798
+    },
+    "plots/real_workers/quick/01_training_loss_vs_time.png": {
+      "sha256": "7ecbc58ff2bf6308519616ff749a097aa85b3d4d4e7d00806301126f65ecd25b",
+      "bytes": 128746
+    },
+    "plots/real_workers/quick/02_validation_accuracy_vs_time.pdf": {
+      "sha256": "1c6d9f1a866e25105bdb0c714d75a9460c779e22fe7190055e137977a7dc7991",
+      "bytes": 24896
+    },
+    "plots/real_workers/quick/02_validation_accuracy_vs_time.png": {
+      "sha256": "6b9bc0ba78f939a25fb909b56a3aa9b02be3aff77be5f905594af854140ea383",
+      "bytes": 123315
+    },
+    "plots/real_workers/quick/03_worker_scaling.pdf": {
+      "sha256": "31d419ecb51a759795965b2293a4d5340cca54d44a232b8e2df58b91ecc467c2",
+      "bytes": 26385
+    },
+    "plots/real_workers/quick/03_worker_scaling.png": {
+      "sha256": "83396ea3401ae3ea909ab415d8c318bb5aac167b4665d98ef128cd01f3bccbb4",
+      "bytes": 249792
+    },
+    "plots/real_workers/quick/04_gradient_staleness.pdf": {
+      "sha256": "77bc7ee8e08caf2471d05f96db920acd39eac0f4e80e63b6da8fda569360f909",
+      "bytes": 18830
+    },
+    "plots/real_workers/quick/04_gradient_staleness.png": {
+      "sha256": "be9848c5c05e158080926c11932a595efc94e079bfd92f88968e5fcab5a6e2ff",
+      "bytes": 143686
+    },
+    "plots/real_workers/quick/05_threshold_comparison.pdf": {
+      "sha256": "98dfed1997dd3fcb2243f713a2a35010cb85317cd38a705e7cadcb710947496b",
+      "bytes": 18714
+    },
+    "plots/real_workers/quick/05_threshold_comparison.png": {
+      "sha256": "65b7b356bb184f367e1e622990ded28f756377c04f1fb1078a134c7bacaec0cb",
+      "bytes": 108248
+    },
+    "plots/real_workers/quick/06_slow_workers.pdf": {
+      "sha256": "02ed9896b57744eace59812f7bef6e30b1226a6e1ca1958e21db412ad2d57ee2",
+      "bytes": 25974
+    },
+    "plots/real_workers/quick/06_slow_workers.png": {
+      "sha256": "0462dbe390229f49798a5a6a366b1af0930efa7960ad87097bee07f1ba6430bc",
+      "bytes": 173091
+    },
+    "plots/real_workers/quick/07_simulation_vs_real.pdf": {
+      "sha256": "aa6f4604a6a069c2ec04dab53da6dfeb9972a8e9d5448fb50b98c7abb63c0a5f",
+      "bytes": 42373
+    },
+    "plots/real_workers/quick/07_simulation_vs_real.png": {
+      "sha256": "512e045fbaeaa70820e1ec512bd2b023ebeeb14baa58c08a573f29415e9a2cc4",
+      "bytes": 281706
+    },
+    "plots/real_workers/quick/08_loss_vs_gradients.pdf": {
+      "sha256": "4ebd4890fbf79631fe6443a93eb49c7e2133f50fc13ab64a3e20ab01b9e754c4",
+      "bytes": 26251
+    },
+    "plots/real_workers/quick/08_loss_vs_gradients.png": {
+      "sha256": "67e4f8133f3f5d743e9bbfce4d6907b83d196ad52ff7a1b232bb7aa68b49e70a",
+      "bytes": 135119
+    },
+    "plots/real_workers/quick/09_loss_vs_examples.pdf": {
+      "sha256": "025fdf431a117437c068991bbd3bb42eee91350f35ec47115ef20e7b722e4974",
+      "bytes": 26162
+    },
+    "plots/real_workers/quick/09_loss_vs_examples.png": {
+      "sha256": "3b285a01b8c99df251ad3a86828af93e83d3b0ed9ae2f545f6fbdff853bd3aee",
+      "bytes": 140044
+    },
+    "plots/real_workers/quick/10_worker_timeline.pdf": {
+      "sha256": "51a653f26e70dd90ee4d75a22bcebe8189125f09d7fa34222e3cc775e1fa0e29",
+      "bytes": 102337
+    },
+    "plots/real_workers/quick/10_worker_timeline.png": {
+      "sha256": "23afe2b6bdd613220ec0ae92271a1cb99e0ebf7d72f8e559b011ff0ae2f31b16",
+      "bytes": 117116
+    },
+    "plots/real_workers/quick/11_loss_vs_updates.pdf": {
+      "sha256": "a09c1c3d6999ddb692d65a597e06d41f570e15dbbbe923e96b4b04b572e81020",
+      "bytes": 25980
+    },
+    "plots/real_workers/quick/11_loss_vs_updates.png": {
+      "sha256": "55b1499773939cd87f575d3ea39e1c26a5c6b78cb702c2e3ab668fe3eca8bb21",
+      "bytes": 132487
+    },
+    "plots/real_workers/quick/figure_provenance.json": {
+      "sha256": "da0521a1149fa8ac65cb377ce0ebdb716ee4cafdcfe830f2059fa8ae2c5c0a52",
+      "bytes": 313
+    }
+  }
+}

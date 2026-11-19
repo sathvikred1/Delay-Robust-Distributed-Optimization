@@ -1,19 +1,25 @@
 # Real-worker experiment report
 
-CSCI 8000 — Optimization in AI. This report extends the completed Week 9 simulation.
-It describes the new measured implementation and does not change the historical
-simulation report or its interpretation.
+CSCI 8000 — Optimization in AI.
 
-## Research objective
+We started with a simulation of worker delays in Week 9. We then added separate
+Python worker processes to see what changes when timing and coordination costs
+are real. This report covers that extension. The earlier work is kept in
+`archive/week9/`.
 
-Study how delays and stale gradients change progress, computation use, and throughput
-for synchronous SGD, vanilla asynchronous SGD, delay-filtered asynchronous SGD, and
-simplified asynchronous mini-batch SGD. The research question is about the interaction
-between optimization and execution, not simply which method completes more updates.
+## What we wanted to find out
 
-## System and correctness
+Our question was simple: can training keep moving when some workers are slow,
+and what happens when their gradients arrive late?
 
-One parent process is the parameter server. It alone owns and updates the model.
+We compared synchronous SGD, vanilla asynchronous SGD, delay-filtered asynchronous
+SGD, and a simplified asynchronous mini-batch method. We looked at model quality,
+time, and work used together, rather than deciding which method was better from
+its update count alone.
+
+## How the implementation works
+
+We use one parent process as the parameter server. It keeps and updates the model.
 Each worker is a separate OS process created using Python's spawn start method.
 Read-only training arrays are shared between processes. Each task carries a copied
 model snapshot and its applied-update version. Workers calculate the gradient using
@@ -31,7 +37,7 @@ separate physical computers. Queue serialization, scheduling, CPU contention,
 shared-memory access, and server evaluation are included. Network communication
 and cross-machine failures are not measured.
 
-## Data and reproducible preparation
+## Data and preparation
 
 The quick suite uses the real Breast Cancer Wisconsin Diagnostic dataset and
 completed 36 runs. It is a demonstration with one seed, not a statistical
@@ -50,7 +56,7 @@ Dataset fingerprint: `8650e26a1d6811c2188929ff9cbfef3234c7600c4223966c48c0e873c2
 The manifest also records split-index fingerprints, scaler parameters, and class
 balance. Random row splits may be optimistic for spatially correlated forest data.
 
-## Experimental protocol
+## How we ran the experiments
 
 The completed full grid contains **216 runs**: 1, 2, 4, and 8 workers; natural,
 moderate, and severe worker conditions; six algorithm variants; and seeds 11, 22, 33.
@@ -98,7 +104,7 @@ Accounting checks require computed = accepted + discarded; accepted = used + pen
 started = computed after draining; examples = computed × worker batch size; and
 updates × effective batch = used gradients × worker batch size.
 
-## Hardware and verification
+## Machine and checks
 
 Recorded machine: Apple M2,
 8 logical CPUs,
@@ -120,7 +126,7 @@ and recomputed training, validation, and test scores for all
 216 saved full-run models. These matched the
 measured CSVs within numerical tolerance. The quick models passed the same check.
 
-## Main measured comparison: 8 workers, severe delays
+## Results: 8 workers, severe delays
 
 Values are mean ± sample SD across three seeds. Stale-discard percentages exclude
 post-budget draining; maximum age is the mean of per-run maxima, not the pooled max.
@@ -197,7 +203,7 @@ on common seed support; shaded bands show sample SD, not confidence intervals.
 The Streamlit dashboard reads the measured CSVs directly and exposes worker, method,
 scenario, and seed filters, four progress axes, hardware, and result downloads.
 
-## Limitations and next experiments
+## What we can conclude and what still needs work
 
 The budgets are short and the model is convex binary logistic regression. Natural
 local overhead can dominate small gradient tasks. Some runs occurred while plots,
@@ -208,12 +214,15 @@ fixed learning rates, unequal batches, and fixed slow-worker sleeps were tested.
 Test scores are retained for transparency, but repeated inspection must not guide
 future tuning on the same held-out data.
 
-The results support a measured study of synchronization, stale work, and local
-coordination, not universal superiority or multi-machine optimality. Next experiments
-should use longer quiet-machine runs, more seeds, matched effective batches and
-common tuning budgets, spatial holdouts, time-varying worker speeds, and physical
-networked machines. The fixed mini-batch and fixed-threshold methods are educational
-simplifications of the research papers, not exact reproductions of their guarantees.
+The main lesson from our runs is that waiting for slow workers can limit progress,
+while asynchronous updates bring a different problem: some gradients are very old.
+Adding workers also stopped giving a clear throughput increase between four and eight.
+
+Our next step would be longer runs on an otherwise idle machine, more seeds, and
+matched effective batches. Spatial holdouts would strengthen the forest-data study.
+Separate physical machines would be needed to study network costs. The fixed
+mini-batch and filtering methods here are simplified versions of the research ideas;
+we have not reproduced the papers' full algorithms or optimality guarantees.
 
 ## References and reproduction
 
@@ -223,5 +232,5 @@ simplifications of the research papers, not exact reproductions of their guarant
 - CoverType data: https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_covtype.html
 
 See README.md for installation, exact commands, event-log restoration, and protected
-output directories. Use reports/professor_demo.md for the 5–7 minute demonstration
+output directories. Use reports/demo.md for the 5–7 minute demonstration
 and reports/presentation_outline.md to prepare classroom slides.

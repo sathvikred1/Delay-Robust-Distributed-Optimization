@@ -14,7 +14,7 @@ from real_workers.plotting import curve_estimates
 
 st.set_page_config(page_title="Delay-Robust Distributed Optimization", layout="wide")
 st.title("Delay-Robust Distributed Optimization")
-st.write("CSCI 8000 · How worker delays and gradient staleness affect SGD")
+st.write("Our CSCI 8000 project compares how SGD methods behave when workers finish at different times.")
 st.info("These are real Python worker processes on one machine. This experiment does not run across separate physical machines.")
 
 base = ROOT / "results/real_workers"

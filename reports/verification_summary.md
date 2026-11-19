@@ -1,39 +1,48 @@
-# Verification summary
+# Checks and reproducibility
 
-The baseline simulation passed all 12 original tests before changes.
-The final complete suite passed 38 tests from the permanent worktree. `python -m pip check` also passed. Actual terminal output is retained in
-[test_results.txt](test_results.txt).
+We checked the implementation at three levels: unit tests, the recorded worker
+events, and the saved final models. The original simulation passed its 12 tests
+before the extension. The current suite has **39 passing tests**; the terminal
+output is in [test_results.txt](test_results.txt).
 
-| Suite | Completed runs | Returned gradients audited | Models independently rescored | Checks |
-| --- | --- | --- | --- | --- |
-| Full CoverType | 216 | 3,950,837 | 216 | passed |
-| Quick Breast Cancer | 36 | 230,461 | 36 | passed |
+| Experiment | Runs | Returned gradients checked | Final models rescored |
+| --- | --- | --- | --- |
+| Full CoverType | 216 | 3,950,837 | 216 |
+| Quick Breast Cancer | 36 | 230,461 | 36 |
 
-The event audit verifies task sequences, snapshot-version fingerprints, staleness,
-model versions, acceptance thresholds, budget exclusion, example/gradient/update
-counts, clean worker exits, independent aggregation, source snapshots, and lossless
-reconstruction of compressed event logs. The model audit rebuilt each real dataset
-split, reproduced its fingerprint, and recomputed training, validation, and test
-scores for every saved model.
+The event checks cover task order, model snapshots, staleness, acceptance thresholds,
+late arrivals, work counts, clean process exits, and the aggregate tables.
+The compressed logs reconstruct the original event CSVs exactly.
+The model check rebuilt each dataset split and recomputed all training,
+validation, and test scores. They matched the saved results within numerical tolerance.
 
-The Streamlit server was launched on localhost and its /_stcore/health endpoint
-returned HTTP 200 with body `ok`. AppTest also exercised suite selection, the
-examples-processed axis, worker filtering, and the empty-selection state.
+The dashboard passed its interaction checks and its local health endpoint returned
+HTTP 200. Its tables and observations read the recorded CSVs.
 
-Both suites have 11 scientific figures, each saved as PNG and PDF: 44 image files.
-The representative loss, scaling, simulation comparison, and timeline images were
-visually inspected for labeling and layout.
+## What we kept when organizing the repository
 
-Only README.md, requirements.txt, and .gitignore changed among previously tracked
-files. The original simulation source, experiments, tests, reports, CSVs, and plots
-remain unchanged. The original README text is retained inside the updated README.
+The 72 earlier simulation output/configuration files are preserved in
+`archive/week9/simulation_artifacts.tar.gz`, with filenames and checksums in its
+manifest. The Week 9 report and original README remain readable beside the archive.
+The 23 quick-figure/provenance files are together in `archive/quick_demo/`.
+Every archived file was checked against its original SHA256 before consolidation.
 
-Limitations: execution is single-machine multiprocessing. Budgets are short and
-arrival order is OS-dependent. Three seeds support descriptive mean/SD summaries,
-not significance claims. Effective batches differ by algorithm. Event CSVs are
-saved locally and versioned as exact compressed parts to respect GitHub file limits.
+The main plots folder now contains the 11 full-experiment figures in PNG and PDF.
+The quick figures can be restored from their archive or regenerated from the quick
+results. The original simulation code and tests remain available. The comparison
+plot reads the original simulation CSV directly from the archive.
 
-To reproduce the audits:
+No measured real-worker CSVs, models, event-log parts, source snapshots, or hardware
+records were removed. We changed the presentation and organization, not the
+experimental measurements.
+
+## Scope of the evidence
+
+These are short experiments on one machine. Arrival order depends on OS scheduling,
+effective batches differ between methods, and three seeds support descriptive
+mean/SD comparisons rather than statistical-significance claims.
+
+To run the checks when needed:
 
 ```bash
 python -m pytest -q

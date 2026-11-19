@@ -1,5 +1,6 @@
 """Publication-style figures from measured CSVs; no fitted performance claims."""
 import json
+import tarfile
 from pathlib import Path
 
 import matplotlib
@@ -19,6 +20,21 @@ def result_directory(root=None):
         return Path(root)
     base = Path(__file__).resolve().parents[1] / "results/real_workers"
     return base if (base / "raw_results.csv").exists() else base / "quick"
+
+
+
+def load_simulation_history(root):
+    """Read the historical comparison without unpacking the Week 9 archive."""
+    root = Path(root)
+    csv_path = root / "results/raw_results.csv"
+    if csv_path.exists():
+        return pd.read_csv(csv_path)
+    archive = root / "archive/week9/simulation_artifacts.tar.gz"
+    if archive.exists():
+        with tarfile.open(archive, "r:gz") as bundle:
+            with bundle.extractfile("results/raw_results.csv") as stream:
+                return pd.read_csv(stream)
+    return None
 
 
 def curve_estimates(frame, x, y, points=100):
@@ -138,9 +154,8 @@ def generate(results=None, output="plots/real_workers"):
     save_figure(fig, output, "06_slow_workers")
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
-    historical = Path(__file__).resolve().parents[1] / "results/raw_results.csv"
-    if historical.exists():
-        sim = pd.read_csv(historical)
+    sim = load_simulation_history(Path(__file__).resolve().parents[1])
+    if sim is not None:
         sim = sim[(sim.workers == 4) & (sim.scenario == "high")].copy()
         sim["elapsed_seconds"] = sim.simulated_time
         draw_curves(axes[0], sim, "simulated_time", "training_loss")
