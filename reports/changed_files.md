@@ -1,8 +1,9 @@
 # Changed files for push review
 
 Branch: `real-worker-experiments`, based on `main` at `90ff3c2`.
-No push or merge has been performed. The worktree belongs to the existing renamed
-repository and its origin is `sathvikred1/Delay-Robust-Distributed-Optimization`.
+This manifest records the development-branch changes for review. Main is unchanged.
+The worktree belongs to the existing renamed repository and its origin is
+`sathvikred1/Delay-Robust-Distributed-Optimization`.
 
 Validation: **38 tests passed**, 216 full runs plus 36 quick runs completed,
 4,181,298 returned gradients audited, and all 252 final models independently rescored.
@@ -40,6 +41,7 @@ the original README text is also retained.
 - `reports/changed_files.md` (A)
 - `reports/presentation_outline.md` (A)
 - `reports/professor_demo.md` (A)
+- `reports/professor_explanation_guide.md` (A)
 - `reports/real_worker_experiment_report.md` (A)
 - `reports/semester_progress.md` (A)
 - `reports/test_results.txt` (A)

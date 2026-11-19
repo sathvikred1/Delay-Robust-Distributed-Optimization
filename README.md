@@ -225,6 +225,7 @@ and downloadable result rows.
 
 Review [verification evidence](reports/verification_summary.md) and the
 [changed-file manifest](reports/changed_files.md) before pushing.
+Start with the [simple explanation guide](reports/professor_explanation_guide.md) if you are new to the experiment.
 Use [the professor demo](reports/professor_demo.md) for a 5–7 minute walkthrough,
 and [the semester progress plan](reports/semester_progress.md) to connect this work
 to Weeks 10–15.
