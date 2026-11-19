@@ -94,6 +94,7 @@ def generate(results=None, output="plots/real_workers"):
     axes[0].set_ylabel("In-budget gradient results / second")
     axes[-1].legend(fontsize=8)
     fig.suptitle(f"Worker count vs throughput · {manifest['dataset']['name']}")
+    fig.supxlabel("Mean across seeds; error bars = sample SD where n > 1.", fontsize=9)
     save_figure(fig, output, "03_worker_scaling")
 
     subset = raw[(raw.workers == worker_count) & (raw.scenario == "severe")]
@@ -106,6 +107,7 @@ def generate(results=None, output="plots/real_workers"):
         ax.set(title=title, ylabel="Applied updates since snapshot")
         ax.grid(axis="y", alpha=0.2)
     fig.suptitle(subtitle + " · in-budget arrivals only")
+    fig.supxlabel("Bars show seed means; error bars = sample SD where n > 1. Maximum = mean of run maxima.", fontsize=9)
     save_figure(fig, output, "04_gradient_staleness")
 
     filtered = subset[subset.method == "filtered"].copy()
@@ -117,6 +119,7 @@ def generate(results=None, output="plots/real_workers"):
         ax.set(xlabel="Inclusive staleness threshold (updates)", ylabel=ylabel, xticks=[2, 5, 10])
         ax.grid(alpha=0.2)
     fig.suptitle("Staleness threshold comparison\n" + subtitle)
+    fig.supxlabel("Mean across seeds; error bars = sample SD where n > 1.", fontsize=9)
     save_figure(fig, output, "05_threshold_comparison")
 
     fig, axes = plt.subplots(1, 2, figsize=(13, 6))
@@ -131,6 +134,7 @@ def generate(results=None, output="plots/real_workers"):
         ax.grid(alpha=0.2)
     axes[1].legend(fontsize=8)
     fig.suptitle(f"Effect of slow workers · {worker_count} workers")
+    fig.supxlabel("Mean across seeds; error bars = sample SD where n > 1.", fontsize=9)
     save_figure(fig, output, "06_slow_workers")
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 6))
@@ -159,14 +163,15 @@ def generate(results=None, output="plots/real_workers"):
     horizon = min(0.2, float(raw.time_budget.iloc[0]))
     events = events[events.start_seconds <= horizon]
     fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharey=True)
-    for ax, end in zip(axes, (horizon, min(horizon, 0.004))):
-        for event in events[events.start_seconds <= end].itertuples():
+    zoom_start = horizon / 2
+    for ax, (left, end) in zip(axes, ((0, horizon), (zoom_start, min(horizon, zoom_start + 0.004)))):
+        for event in events[(events.start_seconds <= end) & (events.arrival_seconds >= left)].itertuples():
             ax.broken_barh([(event.start_seconds, event.finish_seconds - event.start_seconds)],
                           (event.worker_id - 0.25, 0.5), facecolors=COLORS[0], alpha=0.7)
             ax.plot(event.arrival_seconds, event.worker_id, "|", color=COLORS[1], markersize=9)
         ax.set(xlabel="Measured time since training start (seconds)", ylabel="OS worker ID",
-               title=f"First {end * 1000:g} ms (all tasks in view; long bars clipped to view)",
-               yticks=range(worker_count), xlim=(0, end))
+               title=f"{left * 1000:g}–{end * 1000:g} ms (all tasks in view; long bars clipped to view)",
+               yticks=range(worker_count), xlim=(left, end))
         ax.grid(axis="x", alpha=0.2)
     fig.suptitle(f"Real execution timeline · vanilla async · severe delay · seed {raw[raw.run_id == timeline_id].iloc[0].seed}")
     fig.supxlabel("Blue: worker active (computation + injected sleep). Orange ticks: server receives gradient.", fontsize=10)

@@ -5,8 +5,10 @@
   "snapshot_versions_checked": 179381,
   "source_hashes_match": true,
   "current_source_differences": [
+    "real_workers/plotting.py",
     "real_workers/experiments.py",
-    "real_workers/artifacts.py"
+    "real_workers/artifacts.py",
+    "run_real_workers.py"
   ],
   "errors": [],
   "checks": [
@@ -21,6 +23,7 @@
     "worker timing and clean exits",
     "history endpoints",
     "independent aggregation",
-    "source and archive SHA256"
+    "source and archive SHA256",
+    "lossless archive reconstruction"
   ]
 }

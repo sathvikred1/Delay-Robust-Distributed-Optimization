@@ -115,6 +115,7 @@ def verify(directory):
     raw = pd.read_csv(directory / "raw_results.csv")
     history = pd.read_csv(directory / "training_history.csv")
     timing = pd.read_csv(directory / "worker_timing.csv")
+    protocols = raw.set_index("run_id")
     totals = {}
     errors = []
     next_tasks = {}
@@ -124,6 +125,11 @@ def verify(directory):
     finished_runs = set()
     for frame in iter_event_chunks(directory):
         for run_id, e in frame.groupby("run_id", sort=False):
+            protocol = protocols.loc[run_id]
+            if protocol.method in {"filtered", "minibatch"} and (e.loc[e.accepted, "staleness"] > protocol.threshold).any():
+                errors.append(f"Stale gradient accepted: {run_id}")
+            if protocol.method == "sync" and e.loc[e.accepted, "staleness"].ne(0).any():
+                errors.append(f"Synchronous snapshot is stale: {run_id}")
             if current_run != run_id:
                 if current_run is not None:
                     finished_runs.add(current_run)
@@ -176,6 +182,8 @@ def verify(directory):
             errors.append(f"Accounting mismatch: {row.run_id}")
         if not np.isclose(row.mean_staleness, e["staleness_sum"] / max(1, e["in_budget"])):
             errors.append(f"Mean staleness mismatch: {row.run_id}")
+        if not np.isclose(row.worker_throughput, e["in_budget"] / row.wall_clock_seconds):
+            errors.append(f"Throughput denominator mismatch: {row.run_id}")
         final = history[history.run_id == row.run_id].iloc[-1]
         if not np.isclose(row.training_loss, final.training_loss) or row.optimizer_updates != final.optimizer_updates:
             errors.append(f"History endpoint mismatch: {row.run_id}")
@@ -200,6 +208,14 @@ def verify(directory):
         errors.append("Prespecified grid incomplete")
     if raw.run_id.duplicated().any():
         errors.append("Duplicate run IDs")
+    from .config import WorkerConfig
+    configured = {WorkerConfig(**config).run_id: config for config in manifest["configurations"]}
+    if set(configured) != set(raw.run_id):
+        errors.append("Measured run IDs do not match the prespecified grid")
+    for row in raw.itertuples():
+        for key in ("method", "workers", "scenario", "seed", "time_budget", "learning_rate", "sample_batch_size", "minibatch_gradients"):
+            if row.run_id in configured and getattr(row, key) != configured[row.run_id][key]:
+                errors.append(f"Configuration mismatch: {row.run_id}, {key}")
     from .experiments import aggregate
     expected = aggregate(raw)
     actual = pd.read_csv(directory / "aggregate_results.csv")
@@ -210,9 +226,26 @@ def verify(directory):
     index_path = directory / "gradient_event_parts/index.json"
     if index_path.exists():
         index = json.loads(index_path.read_text())
+        reconstructed = hashlib.sha256()
+        restored_rows, expected_header = 0, None
         for part in index["parts"]:
-            if sha256(index_path.parent / part["file"]) != part["sha256"]:
+            part_path = index_path.parent / part["file"]
+            if sha256(part_path) != part["sha256"]:
                 errors.append(f"Archive checksum failed: {part['file']}")
+            with gzip.open(part_path, "rb") as archived:
+                header = archived.readline()
+                if expected_header is None:
+                    expected_header = header
+                    reconstructed.update(header)
+                elif header != expected_header:
+                    errors.append("Archive part header mismatch")
+                for block in iter(lambda: archived.read(1024 * 1024), b""):
+                    reconstructed.update(block)
+                    restored_rows += block.count(b"\n")
+        if reconstructed.hexdigest() != index["csv_sha256"]:
+            errors.append("Lossless archive reconstruction hash mismatch")
+        if restored_rows != index["rows"] or restored_rows != sum(e["computed"] for e in totals.values()):
+            errors.append("Archive row count differs from measured events")
         if (directory / "gradient_events.csv").exists() and sha256(directory / "gradient_events.csv") != index["csv_sha256"]:
             errors.append("Archive and original CSV differ")
     report = dict(passed=not errors, runs_checked=len(raw), events_checked=sum(t["computed"] for t in totals.values()),
@@ -221,7 +254,8 @@ def verify(directory):
                   errors=errors, checks=["grid completeness", "event uniqueness", "snapshot fingerprints",
                       "staleness arithmetic", "version transitions", "budget exclusion", "event timing",
                       "gradient/example/update accounting", "worker timing and clean exits",
-                      "history endpoints", "independent aggregation", "source and archive SHA256"])
+                      "history endpoints", "independent aggregation", "source and archive SHA256",
+                      "lossless archive reconstruction"])
     (directory / "artifact_verification.json").write_text(json.dumps(report, indent=2) + "\n")
     if errors:
         raise AssertionError(errors)

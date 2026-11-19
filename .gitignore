@@ -10,3 +10,4 @@ data/cache/
 # in gradient_event_parts/*.csv.gz; the archive tool restores the exact CSV.
 results/real_workers/gradient_events.csv
 results/real_workers/quick/gradient_events.csv
+results/real_workers/runs/**/gradient_events.csv

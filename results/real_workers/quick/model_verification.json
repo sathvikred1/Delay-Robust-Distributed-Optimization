@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "dataset_fingerprint_matches": true,
+  "models_checked": 36,
+  "errors": [],
+  "metrics": [
+    "training_loss",
+    "validation_loss",
+    "training_accuracy",
+    "validation_accuracy",
+    "test_loss",
+    "test_accuracy"
+  ]
+}

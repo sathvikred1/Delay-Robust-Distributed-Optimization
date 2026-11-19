@@ -1,0 +1,7 @@
+{
+  "results": "results/real_workers",
+  "dataset_sha256": "8650e26a1d6811c2188929ff9cbfef3234c7600c4223966c48c0e873c234b929",
+  "timeline_run_id": "async_tauNone_w8_severe_s11",
+  "curves": "Linear interpolation within shared seed support; bands are sample SD, not confidence intervals",
+  "figures": 11
+}

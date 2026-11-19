@@ -16,7 +16,8 @@ def test_dashboard_loads_and_filters_measured_data():
     # Prefer the completed quick suite when a full suite is still running.
     app.sidebar.selectbox[0].select(ROOT / "results/real_workers/quick").run()
     assert not app.exception
-    app.selectbox[1].select("Training examples processed").run()
+    next(widget for widget in app.selectbox if widget.label == "Compare progress against").select(
+        "Training examples processed").run()
     assert not app.exception
     app.sidebar.multiselect[0].set_value([1]).run()
     assert not app.exception
