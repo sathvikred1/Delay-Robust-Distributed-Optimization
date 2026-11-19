@@ -18,11 +18,18 @@ st.write("CSCI 8000 · How worker delays and gradient staleness affect SGD")
 st.info("These are real Python worker processes on one machine. This experiment does not run across separate physical machines.")
 
 base = ROOT / "results/real_workers"
-available = [p for p in [base, base / "quick"] if (p / "raw_results.csv").exists()]
+available = [p for p in [base, base / "quick", *sorted((base / "runs").glob("*"), reverse=True)]
+             if (p / "raw_results.csv").exists()]
 if not available:
     st.warning("No measured results found. Run: python run_real_workers.py --quick")
     st.stop()
-choice = st.sidebar.selectbox("Experiment", available, format_func=lambda p: "Full · Forest CoverType" if p == base else "Quick · Breast Cancer")
+def experiment_label(path):
+    config = json.loads((path / "experiment_config.json").read_text())
+    suffix = "" if path in (base, base / "quick") else f" · {path.name}"
+    return f"{config['mode'].capitalize()} · {config['dataset']['name']}{suffix}"
+
+
+choice = st.sidebar.selectbox("Experiment", available, format_func=experiment_label)
 manifest = json.loads((choice / "experiment_config.json").read_text())
 hardware = json.loads((choice / "hardware_info.json").read_text())
 if not manifest.get("complete"):

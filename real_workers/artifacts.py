@@ -117,10 +117,21 @@ def verify(directory):
     timing = pd.read_csv(directory / "worker_timing.csv")
     totals = {}
     errors = []
-    seen = set()
+    next_tasks = {}
     snapshot_hashes = {}
+    snapshot_versions_checked = 0
+    current_run = None
+    finished_runs = set()
     for frame in iter_event_chunks(directory):
-        for run_id, e in frame.groupby("run_id"):
+        for run_id, e in frame.groupby("run_id", sort=False):
+            if current_run != run_id:
+                if current_run is not None:
+                    finished_runs.add(current_run)
+                    snapshot_versions_checked += len(snapshot_hashes)
+                if run_id in finished_runs:
+                    errors.append("Run event blocks are not contiguous")
+                snapshot_hashes = {}
+                current_run = run_id
             state = totals.setdefault(run_id, dict(computed=0, accepted=0, used_updates=0,
                 in_budget=0, stale=0, after=0, compute_seconds=0.0, staleness_sum=0, max_staleness=0))
             state["computed"] += len(e)
@@ -132,6 +143,16 @@ def verify(directory):
             state["compute_seconds"] += float(e.compute_seconds.sum())
             state["staleness_sum"] += int(e.loc[e.in_budget, "staleness"].sum())
             state["max_staleness"] = max(state["max_staleness"], int(e.loc[e.in_budget, "staleness"].max()) if e.in_budget.any() else 0)
+            for row in e[["snapshot_version", "snapshot_sha256"]].drop_duplicates().itertuples(index=False):
+                if row.snapshot_version in snapshot_hashes and snapshot_hashes[row.snapshot_version] != row.snapshot_sha256:
+                    errors.append("Snapshot version has inconsistent parameter fingerprint")
+                snapshot_hashes[row.snapshot_version] = row.snapshot_sha256
+            for row in e[["worker_id", "task_id"]].itertuples(index=False, name=None):
+                key = (run_id, row[0])
+                expected = next_tasks.get(key, 1)
+                if row[1] != expected:
+                    errors.append("Duplicate, missing, or out-of-order worker task")
+                next_tasks[key] = row[1] + 1
         if not (frame.staleness == frame.arrival_version - frame.snapshot_version).all():
             errors.append("Incorrect event staleness")
         if not (frame.version_after == frame.arrival_version + frame.update_applied.astype(int)).all():
@@ -140,16 +161,6 @@ def verify(directory):
             errors.append("After-budget gradient applied")
         if not (frame.start_seconds <= frame.finish_seconds).all() or not (frame.finish_seconds <= frame.arrival_seconds).all():
             errors.append("Nonmonotonic process timestamps")
-        # Per-snapshot fingerprints must agree even when different workers return it.
-        for row in frame[["run_id", "snapshot_version", "snapshot_sha256"]].drop_duplicates().itertuples(index=False):
-            key = (row.run_id, row.snapshot_version)
-            if key in snapshot_hashes and snapshot_hashes[key] != row.snapshot_sha256:
-                errors.append("Snapshot version has inconsistent parameter fingerprint")
-            snapshot_hashes[key] = row.snapshot_sha256
-        for row in frame[["run_id", "worker_id", "task_id"]].itertuples(index=False, name=None):
-            if row in seen:
-                errors.append("Duplicate worker task")
-            seen.add(row)
     for row in raw.itertuples():
         e = totals[row.run_id]
         pairs = [(row.gradients_computed, e["computed"]), (row.gradients_accepted, e["accepted"]),
@@ -205,7 +216,7 @@ def verify(directory):
         if (directory / "gradient_events.csv").exists() and sha256(directory / "gradient_events.csv") != index["csv_sha256"]:
             errors.append("Archive and original CSV differ")
     report = dict(passed=not errors, runs_checked=len(raw), events_checked=sum(t["computed"] for t in totals.values()),
-                  snapshot_versions_checked=len(snapshot_hashes), source_hashes_match=not mismatches,
+                  snapshot_versions_checked=snapshot_versions_checked + len(snapshot_hashes), source_hashes_match=not mismatches,
                   current_source_differences=current_differences,
                   errors=errors, checks=["grid completeness", "event uniqueness", "snapshot fingerprints",
                       "staleness arithmetic", "version transitions", "budget exclusion", "event timing",

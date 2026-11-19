@@ -5,6 +5,7 @@ for variable in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "
     os.environ[variable] = "1"
 
 import argparse
+from datetime import datetime, timezone
 from pathlib import Path
 from real_workers.experiments import run_suite
 
@@ -22,6 +23,10 @@ def main():
     args = parser.parse_args()
     mode = "quick" if args.quick else "full"
     output = args.output or Path("results/real_workers" + ("/quick" if args.quick else ""))
+    if args.output is None and (output / "experiment_config.json").exists():
+        stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S_%fZ")
+        output = Path("results/real_workers/runs") / f"{mode}_{stamp}"
+        print(f"Preserving existing measurements; new run will be saved to {output}", flush=True)
     try:
         run_suite(mode, output, args.dataset, args.cache_dir, args.time_budget, args.max_samples)
     except (ValueError, FileExistsError, RuntimeError, TimeoutError) as error:

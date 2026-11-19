@@ -158,17 +158,18 @@ def generate(results=None, output="plots/real_workers"):
     events = pd.concat(chunks, ignore_index=True)
     horizon = min(0.2, float(raw.time_budget.iloc[0]))
     events = events[events.start_seconds <= horizon]
-    fig, ax = plt.subplots(figsize=(12, 5))
-    for event in events.itertuples():
-        ax.broken_barh([(event.start_seconds, event.finish_seconds - event.start_seconds)], (event.worker_id - 0.25, 0.5),
-                      facecolors=COLORS[0], alpha=0.7)
-        ax.plot(event.arrival_seconds, event.worker_id, "|", color=COLORS[1], markersize=9)
-    ax.set(xlabel="Measured time since training start (seconds)", ylabel="OS worker ID",
-           title=f"Real execution timeline · vanilla async · severe delay · seed {raw[raw.run_id == timeline_id].iloc[0].seed}",
-           yticks=range(worker_count), xlim=(0, horizon + 0.03))
-    ax.legend(handles=[Line2D([0], [0], color=COLORS[0], lw=8, label="Worker active (computation + injected sleep)"),
-                       Line2D([0], [0], color=COLORS[1], marker="|", linestyle="None", label="Server receives gradient")], loc="upper right")
-    ax.grid(axis="x", alpha=0.2)
+    fig, axes = plt.subplots(2, 1, figsize=(12, 8), sharey=True)
+    for ax, end in zip(axes, (horizon, min(horizon, 0.004))):
+        for event in events[events.start_seconds <= end].itertuples():
+            ax.broken_barh([(event.start_seconds, event.finish_seconds - event.start_seconds)],
+                          (event.worker_id - 0.25, 0.5), facecolors=COLORS[0], alpha=0.7)
+            ax.plot(event.arrival_seconds, event.worker_id, "|", color=COLORS[1], markersize=9)
+        ax.set(xlabel="Measured time since training start (seconds)", ylabel="OS worker ID",
+               title=f"First {end * 1000:g} ms (all tasks in view; long bars clipped to view)",
+               yticks=range(worker_count), xlim=(0, end))
+        ax.grid(axis="x", alpha=0.2)
+    fig.suptitle(f"Real execution timeline · vanilla async · severe delay · seed {raw[raw.run_id == timeline_id].iloc[0].seed}")
+    fig.supxlabel("Blue: worker active (computation + injected sleep). Orange ticks: server receives gradient.", fontsize=10)
     save_figure(fig, output, "10_worker_timeline")
     (output / "figure_provenance.json").write_text(json.dumps(dict(
         results=str(directory.relative_to(Path(__file__).resolve().parents[1])) if directory.is_relative_to(Path(__file__).resolve().parents[1]) else str(directory),

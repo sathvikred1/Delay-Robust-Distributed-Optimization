@@ -43,3 +43,25 @@ def test_seed_curves_do_not_extrapolate():
     np.testing.assert_array_equal(grid, [0, 5, 10])
     np.testing.assert_allclose(mean, [1, 0.75, 0.5])
     np.testing.assert_allclose(sd, [0, 0, 0])
+
+
+def test_zero_time_budget_is_rejected():
+    import pytest
+    with pytest.raises(ValueError, match="time_budget"):
+        configuration_grid("full", time_budget=0)
+
+
+def test_default_cli_rerun_preserves_prior_results(tmp_path, monkeypatch):
+    import sys
+    import run_real_workers
+    monkeypatch.chdir(tmp_path)
+    original = tmp_path / "results/real_workers/quick/experiment_config.json"
+    original.parent.mkdir(parents=True)
+    original.write_text('{"complete": true}')
+    calls = []
+    monkeypatch.setattr(run_real_workers, "run_suite", lambda *args: calls.append(args))
+    monkeypatch.setattr(sys, "argv", ["run_real_workers.py", "--quick"])
+    run_real_workers.main()
+    assert original.read_text() == '{"complete": true}'
+    assert calls[0][1].parent == Path("results/real_workers/runs")
+    assert calls[0][1].name.startswith("quick_")

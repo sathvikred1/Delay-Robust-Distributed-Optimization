@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "runs_checked": 36,
+  "events_checked": 230461,
+  "snapshot_versions_checked": 179381,
+  "source_hashes_match": true,
+  "current_source_differences": [
+    "real_workers/experiments.py",
+    "real_workers/artifacts.py"
+  ],
+  "errors": [],
+  "checks": [
+    "grid completeness",
+    "event uniqueness",
+    "snapshot fingerprints",
+    "staleness arithmetic",
+    "version transitions",
+    "budget exclusion",
+    "event timing",
+    "gradient/example/update accounting",
+    "worker timing and clean exits",
+    "history endpoints",
+    "independent aggregation",
+    "source and archive SHA256"
+  ]
+}

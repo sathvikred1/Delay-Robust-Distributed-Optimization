@@ -1,0 +1,32 @@
+{
+  "csv_sha256": "b423841d15fb2c593320a82c82ab5ec6579e96f140b4f36159378f1d00558676",
+  "rows": 230461,
+  "parts": [
+    {
+      "file": "part-0000.csv.gz",
+      "rows": 50000,
+      "sha256": "56c6658025c5454a0813e6e3bc27589b2a77671b5bb3dc233b2a3ad41dc83c47"
+    },
+    {
+      "file": "part-0001.csv.gz",
+      "rows": 50000,
+      "sha256": "5ef6e0d31cbe5aa16675e7a6d42d5a1687ff38c326e092be12120bc91f6e7272"
+    },
+    {
+      "file": "part-0002.csv.gz",
+      "rows": 50000,
+      "sha256": "f51439d8a07ed644039bf67fbeb474b60b7758665c25c017263b575fef21a565"
+    },
+    {
+      "file": "part-0003.csv.gz",
+      "rows": 50000,
+      "sha256": "4ca867098f6ac74d97b4ff0ad956dde4c23fbf47f70b3ce3d9865e655dfb5ecd"
+    },
+    {
+      "file": "part-0004.csv.gz",
+      "rows": 30461,
+      "sha256": "47585ec9e80632c8928b429f28fc93434c4b3c32f2bcc3647145be2eeeb39b41"
+    }
+  ],
+  "format": "Each gzip member is a CSV with header; restore omits repeated headers"
+}

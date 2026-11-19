@@ -26,7 +26,7 @@ def configuration_grid(mode, time_budget=None):
     variants = [("sync", None), ("async", None), ("filtered", 2),
                 ("filtered", 5), ("filtered", 10), ("minibatch", 5)]
     configs = [WorkerConfig(method, workers=n, scenario=scenario, threshold=threshold,
-                           seed=seed, time_budget=time_budget or (0.8 if mode == "quick" else 3.0),
+                           seed=seed, time_budget=time_budget if time_budget is not None else (0.8 if mode == "quick" else 3.0),
                            sample_batch_size=128 if mode == "quick" else 1024,
                            evaluation_interval=0.2 if mode == "quick" else 0.5)
                for n in ([1, 4] if mode == "quick" else [1, 2, 4, 8])
