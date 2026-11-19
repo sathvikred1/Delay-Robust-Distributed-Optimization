@@ -2,8 +2,7 @@
 
 **Project:** Delay-Robust Distributed Optimization — CSCI 8000, Optimization in AI.
 
-This guide is for someone who is new to the project. Read the explanation first,
-then use the short speaking script near the end. The numbers below come from the
+This guide is for someone who is new to the project. The numbers below come from the
 saved real-worker experiment results, not from an invented example.
 
 ## 1. What question are we trying to answer?
